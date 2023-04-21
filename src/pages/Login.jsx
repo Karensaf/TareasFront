@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react"
 import { FaSignInAlt } from 'react-icons/fa'
+import { useSelector, useDispatch} from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { login, reset } from "../features/auth/authSlice"
+import Spinner from "../components/Spinner"
 
 const Login = () => {
 
@@ -9,7 +14,27 @@ const Login = () => {
   })
 
   const {email, password} = fromData
+
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+  const {user,isLoading, isError, isSuccess, message} = useSelector((state) => state.auth)
   
+  useEffect(()=> {
+    
+    if(isError) {
+      toast.error(message)
+    }
+
+    if(isSuccess) {
+      navigate('/')
+    }
+
+    dispatch(reset())
+
+  }, [user, isError, isSuccess, message, navigate, dispatch ])
+
+
   //?La funcion onChance hace que se 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -20,7 +45,16 @@ const Login = () => {
 
   const onSubmit = (e) => {
     e.preventDefault()
+
+    const userData = { email, password}
+    dispatch(login(userData))
+    
   }
+
+  if(isLoading) {
+    return <Spinner />
+  }
+
 
   return (
     <>
@@ -32,7 +66,7 @@ const Login = () => {
         <p>Por favor teclea tus credenciales</p>
       </section>
       <section className="form">
-        <form>
+        <form onSubmit={onSubmit}>
           <div className="form-group">
             <input 
             className="form-control" 
