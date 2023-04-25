@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
+import {createTarea} from '../features/tareas/tareaSlice'
 
 const TareaForm = () => {
 
@@ -9,6 +10,9 @@ const TareaForm = () => {
 
     const onSubmit = (e) => {
         e.preventDefault()
+
+        dispatch(createTarea({texto}))
+        setTexto('')
     }
 
   return (
