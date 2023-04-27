@@ -32,6 +32,17 @@ export const getTareas = createAsyncThunk('tareas/getAll', async (_, thunkAPI) =
     }
 })
 
+//! Borrar  las tareas del usuario
+export const borrarTareas = createAsyncThunk('tareas/borrar', async (id, thunkAPI) => {
+    try {
+        const token = thunkAPI.getState().auth.user.token
+        return await tareaService.borrarTareas(id, token)
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 export const tareaSlice = createSlice({
     name: 'tarea',
     initialState,
@@ -62,6 +73,19 @@ export const tareaSlice = createSlice({
             state.tareas = action.payload
         })
         .addCase(getTareas.rejected, (state, action) => {
+            state.isLoading = false
+            state.isError = true
+            state.message = action.payload
+        })
+        .addCase(borrarTareas.pending, (state) => {
+            state.isLoading = true
+        })
+        .addCase(borrarTareas.fulfilled, (state, action) => {
+            state.isLoading = false
+            state.isSuccess = true
+            state.tareas = state.tareas.filter((tarea) => tarea._id !== action.payload.id)
+        })
+        .addCase(borrarTareas.rejected, (state, action) => {
             state.isLoading = false
             state.isError = true
             state.message = action.payload

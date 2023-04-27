@@ -5,6 +5,7 @@ import TareaForm from '../components/TareaForm'
 import Spinner from '../components/Spinner'
 import { getTareas, reset } from '../features/tareas/tareaSlice'
 import TareaItem from '../components/TareaItem'
+import { toast } from 'react-toastify'
 
 const Dashboard = () => {
 
@@ -22,9 +23,9 @@ const Dashboard = () => {
 
         if (!user) {
             navigate('/login')
+        } else {
+            dispatch(getTareas())
         }
-
-        dispatch(getTareas())
 
         return () => {
             dispatch(reset())
